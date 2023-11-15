@@ -196,7 +196,7 @@ function promptEmployee(){
   .then((answer) => {
     // Use user feedback for... whatever!!
     db.execute(
-      `INSERT INTO employee (employeeFirstName, employeeLastName, employeeDpt, employeeRole, employeeMgr) VALUES (?, ?, ?, ?)`, [answer.employeeFirstName, answer.employeeLastName, employeeRole, employeeMgr], function(err, results){
+      `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`, [answer.employeeFirstName, answer.employeeLastName, answer.employeeRole, answer.employeeMgr], function(err, results){
         if(err) throw err;
         console.info(`successfully added new employee ${answer.employeeFirstName} ${answer.employeeLastName}`);
         home();
@@ -227,24 +227,22 @@ function promptUpdate(){
         message: 'what is the last name of the employee you would like to update?',
       },
       {
-        type: 'list',
+        type: 'input',
         name: 'updateRole',
-        message: 'What role is this employee going into?',
-        choices: roleList
+        message: 'What role id is the job this employee going into?',
       },
       {
         type: 'input',
         name: 'updateMgr',
-        message: 'What manager is this employee going under?',
+        message: 'What is the manager id of the manager is this employee going under?',
       },
     ])
     .then((answer) => {
       // Use user feedback for... whatever!!
       db.execute(
-        `UPDATE employee
-        SET role_id = ?, manager_id = ?
-        WHERE first_name = ?, last_name = ?;`, [answer.updateRole, answer.updateMgr, answer.empFirst, answer.empLast], function(err, results){
-          console.info(`successfully updated employee ${answer.employeeFirstName} ${answer.employeeLastName}`);
+        `UPDATE employee SET role_id = ?, manager_id = ? WHERE first_name = ? AND last_name = ?;`, [answer.updateRole, answer.updateMgr, answer.empFirst, answer.empLast], function(err, results){
+          if(err) throw err;
+          console.info(`successfully updated employee ${answer.empFirst} ${answer.empLast}`);
           home();
         });
     })
