@@ -12,7 +12,6 @@ const db = mysql.createConnection(
   },
   console.log(`Connected to the ${process.env.DB_NAME} database.`)
 );
-
 //getdata To be integrated in future to put lists intsead of inputs
 // let roleList =[];
 // let dptList = [];
