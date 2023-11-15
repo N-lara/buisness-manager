@@ -13,26 +13,23 @@ const db = mysql.createConnection(
   console.log(`Connected to the ${process.env.DB_NAME} database.`)
 );
 
-let answer;
-let action;
+//getdata To be integrated in future to put lists intsead of inputs
+// let roleList =[];
+// let dptList = [];
 
-let roleList =[];
-let dptList = [];
-
-function getData(){
-  db.query('SELECT name FROM department;', function (err, results) {
-    dptList = results;
-  });
-  db.query('SELECT title FROM role;', function (err, results) {
-    roleList = results;
-  });
-};
-getData();
+// function getData(){
+//   db.query('SELECT name FROM department;', function (err, results) {
+//     dptList = results;
+//   });
+//   db.query('SELECT title FROM role;', function (err, results) {
+//     roleList = results;
+//   });
+// };
 
 
 //prompts main questions
 function home(){
-  getData;
+  //getData();
   inquirer
   .prompt([
     /* Pass your questions in here */
@@ -43,11 +40,9 @@ function home(){
       choices: ['View all employees', 'Add employee', 'Update employee role', 'View all roles', 'Add role', 'View all departments', 'Add department', 'Quit'],
   },
   ])
-  .then((answers) => {
+  .then((answer) => {
     // Use user feedback for... whatever!!
-    action = answers.action
-    actionProcesser(action);
-    return action;
+    actionProcesser(answer.action);
   })
   .catch((error) => {
     if (error.isTtyError) {
@@ -59,7 +54,7 @@ function home(){
     }
   });
 }
-
+//takes answer from home question and uses that to get next step
 function actionProcesser(action){
   if(action === 'View all employees'){
     showEmployees();
@@ -102,7 +97,7 @@ const showEmployees = ()=>{
     home();
   });
 };
-
+//inquirer prompt for department and adds department
 function promptDepartment(){
   inquirer
   .prompt([
@@ -130,7 +125,7 @@ function promptDepartment(){
     }
   });
 };
-
+//inquirer prompt for role and adds role
 function promptRole(){
   inquirer
   .prompt([
@@ -167,7 +162,7 @@ function promptRole(){
     }
   });
 };
-
+//inquirer prompt for employee and adds employee
 function promptEmployee(){
   inquirer
   .prompt([
@@ -210,15 +205,14 @@ function promptEmployee(){
     }
   });
 };
-
-
+//inquirer prompt for updating employee info and updated database
 function promptUpdate(){
   inquirer
     .prompt([
       //update role
       {
         type: 'input',
-        name: 'EmpFirst',
+        name: 'empFirst',
         message: 'what is the fist name of the employee you would like to update?',
       },
       {
@@ -238,9 +232,10 @@ function promptUpdate(){
       },
     ])
     .then((answer) => {
-      // Use user feedback for... whatever!!
+      // Use user feedback for... whatever!!.
+      console.info(answer);
       db.execute(
-        `UPDATE employee SET role_id = ?, manager_id = ? WHERE first_name = ? AND last_name = ?;`, [answer.updateRole, answer.updateMgr, answer.empFirst, answer.empLast], function(err, results){
+        `UPDATE employee SET role_id = ?, manager_id = ? WHERE last_name = ? AND first_name = ?;`, [answer.updateRole, answer.updateMgr, answer.empLast, answer.empFirst], function(err, results){
           if(err) throw err;
           console.info(`successfully updated employee ${answer.empFirst} ${answer.empLast}`);
           home();
@@ -256,5 +251,5 @@ function promptUpdate(){
       }
   });
 }
-
+//starts program
 home();
